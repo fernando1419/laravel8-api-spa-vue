@@ -15,8 +15,45 @@ class ContactsTest extends TestCase
    {
       $this->withoutExceptionHandling();
 
-      $this->post('api/contacts', ['name' => 'First Contact Name']);
+      $this->post('api/contacts', [
+         'name'     => 'First Contact Name',
+         'email'    => 'test@test.com',
+         'birthday' => '05/14/1988',
+         'company'  => 'ABC company'
+      ]);
 
-      $this->assertCount(1, Contact::all());
+      $contact = Contact::first();
+
+      //   $this->assertCount(1, $contact);
+      $this->assertEquals('First Contact Name', $contact->name);
+      $this->assertEquals('test@test.com', $contact->email);
+      $this->assertEquals('05/14/1988', $contact->birthday);
+      $this->assertEquals('ABC company', $contact->company);
+   }
+
+   /** @test */
+   public function it_requires_a_name_for_creating_a_contact()
+   {
+      $response = $this->post('api/contacts', [
+         'email'    => 'test@test.com',
+         'birthday' => '05/14/1988',
+         'company'  => 'ABC company'
+      ]);
+
+      $response->assertSessionHasErrors('name');
+      $this->assertCount(0, Contact::all());
+   }
+
+   /** @test */
+   public function it_requires_an_email_for_creating_a_contact()
+   {
+      $response = $this->post('api/contacts', [
+         'name'     => 'First Contact Name',
+         'birthday' => '05/14/1988',
+         'company'  => 'ABC company'
+      ]);
+
+      $response->assertSessionHasErrors('email');
+      $this->assertCount(0, Contact::all());
    }
 }
