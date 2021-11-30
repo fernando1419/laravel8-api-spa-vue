@@ -15,12 +15,7 @@ class ContactsTest extends TestCase
    {
       $this->withoutExceptionHandling();
 
-      $this->post('api/contacts', [
-         'name'     => 'First Contact Name',
-         'email'    => 'test@test.com',
-         'birthday' => '05/14/1988',
-         'company'  => 'ABC company'
-      ]);
+      $this->post('api/contacts', $this->data());
 
       $contact = Contact::first();
 
@@ -34,11 +29,7 @@ class ContactsTest extends TestCase
    /** @test */
    public function it_requires_a_name_for_creating_a_contact()
    {
-      $response = $this->post('api/contacts', [
-         'email'    => 'test@test.com',
-         'birthday' => '05/14/1988',
-         'company'  => 'ABC company'
-      ]);
+      $response = $this->post('api/contacts', array_merge($this->data(), ['name' => null]));
 
       $response->assertSessionHasErrors('name');
       $this->assertCount(0, Contact::all());
@@ -47,13 +38,22 @@ class ContactsTest extends TestCase
    /** @test */
    public function it_requires_an_email_for_creating_a_contact()
    {
-      $response = $this->post('api/contacts', [
-         'name'     => 'First Contact Name',
-         'birthday' => '05/14/1988',
-         'company'  => 'ABC company'
-      ]);
+      $response = $this->post('api/contacts', array_merge($this->data(), ['email' => null]));
 
       $response->assertSessionHasErrors('email');
       $this->assertCount(0, Contact::all());
+   }
+
+   /**
+    * Common data for tests
+    */
+   private function data()
+   {
+      return [
+         'name'     => 'First Contact Name',
+         'email'    => 'test@test.com',
+         'birthday' => '05/14/1988',
+         'company'  => 'ABC company'
+      ];
    }
 }
