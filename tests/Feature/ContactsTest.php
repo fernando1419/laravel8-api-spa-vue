@@ -27,21 +27,16 @@ class ContactsTest extends TestCase
    }
 
    /** @test */
-   public function it_requires_a_name_for_creating_a_contact()
+   public function it_validates_all_required_fields()
    {
-      $response = $this->post('api/contacts', array_merge($this->data(), ['name' => null]));
+      $required_fields = ['name', 'email', 'birthday', 'company'];
+      collect($required_fields)->each(function ($field)
+      {
+         $response = $this->post('api/contacts', array_merge($this->data(), [$field => null]));
 
-      $response->assertSessionHasErrors('name');
-      $this->assertCount(0, Contact::all());
-   }
-
-   /** @test */
-   public function it_requires_an_email_for_creating_a_contact()
-   {
-      $response = $this->post('api/contacts', array_merge($this->data(), ['email' => null]));
-
-      $response->assertSessionHasErrors('email');
-      $this->assertCount(0, Contact::all());
+         $response->assertSessionHasErrors($field);
+         $this->assertCount(0, Contact::all());
+      });
    }
 
    /**
