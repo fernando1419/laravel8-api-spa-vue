@@ -25,8 +25,8 @@ class ContactsTest extends TestCase
       $this->assertEquals('First Contact Name', $contact->name);
       $this->assertEquals('test@test.com', $contact->email);
       $this->assertEquals('1988-05-14', $contact->birthday->format('Y-m-d')); // using carbon to format it.
-      $this->assertEquals('05/14/1988', $contact->birthday->format('m/d/Y')); // using carbon to format it.
-      $this->assertEquals('ABC company', $contact->company);
+   $this->assertEquals('05/14/1988', $contact->birthday->format('m/d/Y')); // using carbon to format it.
+   $this->assertEquals('ABC company', $contact->company);
    }
 
    /** @test */
@@ -61,6 +61,25 @@ class ContactsTest extends TestCase
       $this->assertInstanceOf(Carbon::class, $firstContact->birthday);
       $this->assertEquals('05-14-1988', $firstContact->birthday->format('m-d-Y'));
       $this->assertEquals('14-05-1988', $firstContact->birthday->format('d-m-Y'));
+   }
+
+   /** @test */
+   public function it_retrieves_a_single_contact()
+   {
+      // given an existing contact
+      $this->post('/api/contacts', $this->data());
+      $contact = Contact::first();
+      // when I call this api
+      $response = $this->get('/api/contacts/' . $contact->id);
+      // then it should retrive the existing contact data, json structure and 200 status code.
+      $response->assertStatus(200);
+      $response->assertJsonStructure(['name', 'email', 'birthday', 'company']);
+      $response->assertJsonFragment([
+         'name'     => $contact->name,
+         'email'    => $contact->email,
+         'birthday' => $contact->birthday,
+         'company'  => $contact->company
+      ]);
    }
 
    /**
