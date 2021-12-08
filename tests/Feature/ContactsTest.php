@@ -66,11 +66,12 @@ class ContactsTest extends TestCase
    /** @test */
    public function it_retrieves_a_single_contact()
    {
-      // given an existing contact
-      $this->post('/api/contacts', $this->data());
-      $contact = Contact::first();
-      // when I call this api
+      // given an existing contact (now created using ContactFactory)
+     $contact = Contact::factory()->create(); // dd($contact);
+
+     // when I call this api
       $response = $this->get('/api/contacts/' . $contact->id);
+
       // then it should retrive the existing contact data, json structure and 200 status code.
       $response->assertStatus(200);
       $response->assertJsonStructure(['name', 'email', 'birthday', 'company']);
