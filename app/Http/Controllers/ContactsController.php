@@ -22,4 +22,14 @@ class ContactsController extends Controller
    {
       return $contact; // laravel returns json automatically for us.
    }
+
+   public function update(Contact $contact)
+   {
+      return $contact->update([
+         'name'     => request('name'),
+         'email'    => request('email'),
+         'birthday' => request('birthday'),
+         'company'  => request('company'),
+      ]);
+   }
 }

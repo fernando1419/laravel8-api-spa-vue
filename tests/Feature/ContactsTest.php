@@ -67,9 +67,9 @@ class ContactsTest extends TestCase
    public function it_retrieves_a_single_contact()
    {
       // given an existing contact (now created using ContactFactory)
-     $contact = Contact::factory()->create(); // dd($contact);
+   $contact = Contact::factory()->create(); // dd($contact);
 
-     // when I call this api
+   // when I call this api
       $response = $this->get('/api/contacts/' . $contact->id);
 
       // then it should retrive the existing contact data, json structure and 200 status code.
@@ -81,6 +81,22 @@ class ContactsTest extends TestCase
          'birthday' => $contact->birthday,
          'company'  => $contact->company
       ]);
+   }
+
+   /** @test */
+   public function it_updates_a_single_contact()
+   {
+      $contact = Contact::factory()->create(); // given an existing contact (with random data);
+
+      $this->patch('/api/contacts/' . $contact->id, $this->data()); // when calling this endpoint with $this->data()
+
+      $contact = $contact->fresh(); // refresh the contact (goes to DB again and get it), another option is this: $contact = Contact::first();
+
+      $this->assertEquals('First Contact Name', $contact->name);
+      $this->assertEquals('test@test.com', $contact->email);
+      $this->assertEquals('1988-05-14', $contact->birthday->format('Y-m-d'));
+      $this->assertEquals('05/14/1988', $contact->birthday->format('m/d/Y')); // using carbon to format it.
+      $this->assertEquals('ABC company', $contact->company);
    }
 
    /**
