@@ -86,6 +86,8 @@ class ContactsTest extends TestCase
    /** @test */
    public function it_updates_a_single_contact()
    {
+      $this->withoutExceptionHandling();
+
       $contact = Contact::factory()->create(); // given an existing contact (with random data);
 
       $this->patch('/api/contacts/' . $contact->id, $this->data()); // when calling this endpoint with $this->data()
@@ -93,7 +95,7 @@ class ContactsTest extends TestCase
       $contact = $contact->fresh(); // refresh the contact (goes to DB again and get it), another option is this: $contact = Contact::first();
 
       $this->assertEquals('First Contact Name', $contact->name);
-      $this->assertEquals('test@test.com', $contact->email);
+      $this->assertEquals('test@test.com.cl', $contact->email);
       $this->assertEquals('1988-05-14', $contact->birthday->format('Y-m-d'));
       $this->assertEquals('05/14/1988', $contact->birthday->format('m/d/Y')); // using carbon to format it.
       $this->assertEquals('ABC company', $contact->company);
@@ -106,7 +108,7 @@ class ContactsTest extends TestCase
    {
       return [
          'name'     => 'First Contact Name',
-         'email'    => 'test@test.com',
+         'email'    => 'test@test.com.cl',
          'birthday' => '05/14/1988',
          'company'  => 'ABC company'
       ];
