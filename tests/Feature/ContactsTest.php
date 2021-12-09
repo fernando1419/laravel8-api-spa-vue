@@ -95,10 +95,20 @@ class ContactsTest extends TestCase
       $contact = $contact->fresh(); // refresh the contact (goes to DB again and get it), another option is this: $contact = Contact::first();
 
       $this->assertEquals('First Contact Name', $contact->name);
-      $this->assertEquals('test@test.com.cl', $contact->email);
+      $this->assertEquals('test@test.com', $contact->email);
       $this->assertEquals('1988-05-14', $contact->birthday->format('Y-m-d'));
       $this->assertEquals('05/14/1988', $contact->birthday->format('m/d/Y')); // using carbon to format it.
       $this->assertEquals('ABC company', $contact->company);
+   }
+
+   /** @test */
+   public function it_deletes_a_single_contact()
+   {
+      $contact = Contact::factory()->create(); // given only one existing contact (with random data);
+
+      $this->delete('/api/contacts/' . $contact->id); // when calling this endpoint
+
+      $this->assertCount(0, Contact::all()); // no contact should be in our DB.
    }
 
    /**
@@ -108,7 +118,7 @@ class ContactsTest extends TestCase
    {
       return [
          'name'     => 'First Contact Name',
-         'email'    => 'test@test.com.cl',
+         'email'    => 'test@test.com',
          'birthday' => '05/14/1988',
          'company'  => 'ABC company'
       ];
